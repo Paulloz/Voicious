@@ -86,13 +86,18 @@ class Websocket
             clearTimeout sock._nextPing
             sock._nextPing = undefined
         delete @socks[sock.rid][sock.uid]
+        stillInRoom = 0
         for uid of @socks[sock.rid]
+            ++stillInRoom
             if @socks[sock.rid][uid]?
                 @send @socks[sock.rid][uid], { type : 'peer.remove' , params : {
                     id     : sock.uid
                     name   : sock.name
                     reason : reason
                 } }
+        if stillInRoom <= 0
+            Db.delete 'room', sock.rid, () =>
+                delete @socks[sock.rid]
 
     onmessage : (sock, message) =>
         message = JSON.parse message.data
