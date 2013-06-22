@@ -35,6 +35,9 @@ class Database
         find: () =>
             throw Errors.Error "Database.find : not implemented"
 
+        search: () =>
+            throw Errors.Error "Database.search : not implemented"
+
         delete: () =>
             throw Errors.Error "Database.delete : not implemented"
 
