@@ -64,10 +64,16 @@ class _Mongo extends Database
                 callback doc
 
         find : (collName, filters, callback) =>
+            @search collName, filters, (err, doc) =>
+                if err
+                    throw err
+                callback doc[0]
+
+        search : (collName, filters, callback) =>
             coll = @db.collection collName
             if filters._id?
                 filters._id = new MongoDB.ObjectID(String(filters._id))
-            coll.findOne filters, (err, doc) =>
+            (coll.find filters).toArray (err, doc) =>
                 if err
                     throw err
                 callback doc
@@ -77,7 +83,8 @@ class _Mongo extends Database
             coll.remove {'_id': new MongoDB.ObjectID(String(id))}, {}, (err) =>
                 if err
                     throw err
-                do callback
+                if callback?
+                    do callback
 
         close : () ->
             do @db.close
