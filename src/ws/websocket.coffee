@@ -98,6 +98,9 @@ class Websocket
         if stillInRoom <= 0
             Db.delete 'room', sock.rid, () =>
                 delete @socks[sock.rid]
+                Db.search 'user', { id_room : sock.rid }, (rows) =>
+                    for row in rows
+                        Db.delete 'user', row._id
 
     onmessage : (sock, message) =>
         message = JSON.parse message.data
