@@ -35,7 +35,7 @@ class Websocket
 
     validateSock : (uid, rid, sock) =>
         Db.get 'room', rid, (body) =>
-            if Object.keys(body).length > 0
+            if body?
                 Db.get 'user', uid, (body) =>
                     if Object.keys(body).length > 0 and body.id_room is rid
                         @acceptSock body._id, rid, body.name, sock
@@ -96,11 +96,11 @@ class Websocket
                     reason : reason
                 } }
         if stillInRoom <= 0
-            Db.delete 'room', sock.rid, () =>
+            Db.get 'room', sock.rid, (r) =>
                 delete @socks[sock.rid]
-                Db.search 'user', { id_room : sock.rid }, (rows) =>
-                    for row in rows
-                        Db.delete 'user', row._id
+                for u in r.users
+                    Db.delete 'user', u
+                Db.delete 'room', r._id
 
     onmessage : (sock, message) =>
         message = JSON.parse message.data

@@ -22,7 +22,6 @@ md5         = require 'MD5'
 Config      = require '../common/config'
 {Session}   = require './session'
 {Errors}    = require '../common/errors'
-{Token}     = require './token'
 {Translator}= require './trans'
 {Db}        = require '../common/' + Config.Database.Connector
 
@@ -31,7 +30,6 @@ class _Room
     # with default values.
     constructor : (@modulesList = [ 'userList' , 'textChat' , 'camera', 'tutorial', 'notification']) ->
         @transport = nodemailer.createTransport('Sendmail');
-        @token  = Token
 
     # Render the room with the good translation and the list of modules stringified.
     renderRoom : (res, options, host) =>
@@ -53,9 +51,9 @@ class _Room
                 wsHost  : Config.Websocket.Hostname.External
                 wsPort  : Config.Websocket.Port
             user.id_room = req.params.roomid
-            Db.update 'user', user._id, user, () =>
-                @token.createToken user._id, req.params.roomid, (token) =>
-                    options.token = token
+            body.users.push user._id
+            Db.update 'room', body._id, body, () =>
+                Db.update 'user', user._id, user, () =>
                     @renderRoom res, options, req.host
 
     # Retrieve the bug report entered by the user.
@@ -93,8 +91,9 @@ class _Room
 
     # Create the new room and redirect the user inside.
     newRoom : (req, res, param) =>
-        user = req.body
+        user        = req.body
         param.owner = user._id
+        param.users = []
         Db.insert 'room', param, (newitem) =>
             res.redirect "/room/#{newitem._id}"
 
