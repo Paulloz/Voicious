@@ -60,7 +60,8 @@ class _Mongo extends Database
                 if err
                     throw err
                 if doc?
-                    doc._id = String doc._id
+                    for key, val of doc
+                        val = String val
                 callback doc
 
         find : (collName, filters, callback) =>
@@ -76,6 +77,8 @@ class _Mongo extends Database
             (coll.find filters).toArray (err, doc) =>
                 if err
                     throw err
+                for key, val of doc
+                    val = String val
                 callback doc
 
         delete : (collName, id, callback) =>
