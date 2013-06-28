@@ -160,6 +160,8 @@ class Connections
         @emitter.on 'message.sendToOneName', @sendToOneName
         @emitter.on 'message.sendToOneId', @sendToOneId
         @emitter.on 'camera.enable', @enableCamera
+        window.onbeforeunload = () =>
+            ""
         window.onClose = () =>
             do @ws.close
             for peer in @peers
