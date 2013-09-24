@@ -37,6 +37,16 @@ class TextChat extends Module
     constructor     : (emitter) ->
         super emitter
 
+        emojify.setConfig
+            emojify_tag_type : 'span'
+            emoticons_enabled : yes
+            people_enabled : yes
+            nature_enabled : yes
+            objects_enabled : yes
+            places_enabled : yes
+            symbols_enabled : yes
+            only_crawl_id : 'textChat'
+
         #Define the Markdown interpretor
         @markdown     = new Showdown.converter { extensions : ['voicious'] }
 
@@ -134,6 +144,9 @@ class TextChat extends Module
         #Reinitialize the scrollPane and scroll to its bottom
         do @scrollPane.reinitialise
         @scrollPane.scrollToPercentY 100, no
+
+        #Re-run emojify
+        do emojify.run
 
     # Send the command to the command Manager
     sendCommand     : (command) =>

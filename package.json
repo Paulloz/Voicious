@@ -24,6 +24,7 @@
   },
   "scripts": {
     "install": "bower install",
+    "postinstall" : "(cd app/static/vendor/emojify/less/ && lessc -x emojify.less > emojify.css)",
     "start": "coffee ./app/startup.coffee"
   }
 }
